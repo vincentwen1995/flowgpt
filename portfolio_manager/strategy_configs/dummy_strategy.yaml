@@ -1,0 +1,4 @@
+coin_num: 3
+window: 50
+hold_hour: 24H
+c_rate: 0.0006

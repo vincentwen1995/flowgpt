@@ -1,0 +1,15 @@
+psycopg2-binary==2.9.6
+requests==2.26.0
+click==8.0.1
+dynaconf==3.1.12
+PyYAML==6.0
+ccxt==3.1.33
+pandas==2.0.2
+openai==0.27.8
+tiktoken==0.4.0
+httpx==0.24.1
+tweepy==4.14.0
+praw==7.7.0
+PyPDF2==3.0.1
+aiofiles==23.1.0
+orjson==3.9.1

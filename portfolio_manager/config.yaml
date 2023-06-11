@@ -1,0 +1,71 @@
+CRYPTO_NEWS_API: https://cryptonews-api.com/api/v1
+COINGECKO_API: https://api.coingecko.com/api/v3
+STRATEGY_CONFIGS_DIR: strategy_configs
+RESEARCH_PAPERS_DIR: research_papers
+FACTORS_DIR: models/factors
+# Hardcoded list for symbols for Binance.
+BINANCE_SYMBOLS:
+  - BTCUSDT
+  - ETHUSDT
+  - BNBUSDT
+  - EOSUSDT
+  - ADAUSDT
+  - LINKUSDT
+  - LTCUSDT
+  - XRPUSDT
+  - BCHUSDT
+  - TRXUSDT
+# Hardcoded list for symbols for coingecko.
+COINGECKO_SYMBOL_IDS:
+  - bitcoin
+  - ethereum
+  - binancecoin
+  - eos
+  - cardano
+  - chainlink
+  - litecoin
+  - ripple
+  - bitcoin-cash
+  - tron
+
+CRYPTO_NEWS_SYMBOLS:
+  - btc
+  - eth
+  - bnb
+  - eos
+  - ada
+  - link
+  - ltc
+  - xrp
+  - bch
+  - trx
+
+REDDIT_SUBREDDITS:
+  - bitcoin
+  - ethereum
+  - binance
+  - eos
+  - cardano
+  - chainlink
+  - litecoin
+  - ripple
+  - bitcoincash
+  - tron
+
+BINANCE_UNWANTED_SYMBOLS:
+  - RAYUSDT
+  - SRMUSDT
+  - HNTUSDT
+  - CVCUSDT
+  - BTSUSDT
+  - SCUSDT
+  - FTTUSDT
+  - TUSDT
+  - JOEUSDT
+  - TLMUSDT
+
+CHATGPT_MODEL: gpt-3.5-turbo
+CHATGPT_TOKEN_LIMIT: 3000
+MINING_FACTOR_LIMIT_FOR_DEMO: 2
+
+INFERENCE_LIMIT_FOR_DEMO: 5
