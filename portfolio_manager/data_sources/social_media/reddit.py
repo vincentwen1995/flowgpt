@@ -29,10 +29,10 @@ def get_popular_posts(subreddit_name: str, n: int = 3):
 
     return [
         {
-            "score": post["score"],
-            "ups": post["ups"],
-            "title": post["title"],
-            "selftext": post["selftext"],
+            "score": post.__dict__["score"],
+            "ups": post.__dict__["ups"],
+            "title": post.__dict__["title"],
+            "selftext": post.__dict__["selftext"],
         }
         for post in popular_posts
     ]
