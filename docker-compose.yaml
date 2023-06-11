@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python cli.py sync-data
+    depends_on:
+      - db
+    env_file:
+      - ./secrets/db.txt
+      - ./secrets/twitter.txt
+      - ./secrets/binance.txt
+      - ./secrets/chatgpt.txt
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./secrets/db.txt
+
+volumes:
+  pgdata:

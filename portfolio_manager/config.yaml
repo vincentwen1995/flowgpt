@@ -1,0 +1,14 @@
+CRYPTO_NEWS_API: https://cryptonews-api.com/api/v1
+COINGECKO_API: https://api.coingecko.com/api/v3
+STRATEGY_CONFIGS_DIR: strategy_configs
+UNWANTED_SYMBOLS:
+  - RAYUSDT
+  - SRMUSDT
+  - HNTUSDT
+  - CVCUSDT
+  - BTSUSDT
+  - SCUSDT
+  - FTTUSDT
+  - TUSDT
+  - JOEUSDT
+  - TLMUSDT
