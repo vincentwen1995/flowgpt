@@ -34,15 +34,36 @@ The CLI component is run on-demand and follows the following workflow:
 
 ## Usage
 
+### General
+
 To use this software, follow these steps:
 
 1. Clone this repository to your local machine.
 2. Install the necessary dependencies specified in the requirements.txt file.
 3. Configure the meta parameters and other settings in the configuration file `portfolio_manager/config.yaml`.
-4. Run the daemon component in the background to collect data and generate factors.
-5. Use the CLI component `python cli.py inference-srategy --start-dt 2023-06-01 --end-dt 2023-06-02` to specify the backtesting time period and interact with the ChatGPT model for strategy generation.
-6. Refine the strategies with human input and expertise.
-7. Connect the software to a trading exchange for live trading (future implementation).
+
+
+### Factor mining
+
+1. Make sure research papers are downloaded to the folder `portfolio_manager/research_papers` in PDF format.
+
+2. Run the CLI command:
+
+```bash
+cd portfolio_manager
+python cli.py mine-factors
+```
+
+### Strategy Inference
+
+1. Make sure some manually provided factor functions are located in the folder `portfolio_manager/models/factors` written in Python. See examples like `manual_factor_0.py`
+
+2. Run the CLI command:
+
+```bash
+cd portfolio_manager
+python cli.py inference-srategy --start-dt 2023-06-01 --end-dt 2023-06-02
+```
 
 Please refer to the documentation for detailed instructions on setting up and running the software components.
 
