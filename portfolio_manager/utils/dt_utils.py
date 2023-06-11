@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 
@@ -37,3 +37,10 @@ def convert_to_utc(source_tz: str, datetime_str: str, datetime_format: str) -> d
     utc_datetime = source_datetime.astimezone(pytz.UTC)
 
     return utc_datetime
+
+
+def datetime_range(start_dt: datetime, end_dt: datetime, delta: timedelta) -> datetime:
+    current_dt = start_dt
+    while current_dt <= end_dt:
+        yield current_dt
+        current_dt += delta

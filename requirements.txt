@@ -11,3 +11,5 @@ httpx==0.24.1
 tweepy==4.14.0
 praw==7.7.0
 PyPDF2==3.0.1
+aiofiles==23.1.0
+orjson==3.9.1

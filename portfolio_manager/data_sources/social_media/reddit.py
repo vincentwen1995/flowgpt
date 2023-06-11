@@ -13,7 +13,7 @@ reddit = praw.Reddit(
 )
 
 
-def get_popular_posts(subreddit_name: str, n: int = 10):
+def get_popular_posts(subreddit_name: str, n: int = 3):
     """
     Get popular posts from a subreddit.
 
@@ -27,4 +27,26 @@ def get_popular_posts(subreddit_name: str, n: int = 10):
     subreddit = reddit.subreddit(subreddit_name)
     popular_posts = subreddit.hot(limit=n)
 
-    return [{k: v for k, v in post.__dict__.items()} for post in popular_posts]
+    return [
+        {
+            "score": post["score"],
+            "ups": post["ups"],
+            "title": post["title"],
+            "selftext": post["selftext"],
+        }
+        for post in popular_posts
+    ]
+
+
+def fetch_posts():
+    subreddits = settings.REDDIT_SUBREDDITS
+    results = {}
+    for subreddit in subreddits:
+        try:
+            results.update({subreddit: get_popular_posts(subreddit)})
+        except Exception as e:
+            print(f"Failed fetching posts for subreddit: {subreddit}")
+            print(e)
+            continue
+    # return {subreddit: get_popular_posts(subreddit) for subreddit in subreddits}
+    return results

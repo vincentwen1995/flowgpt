@@ -1,50 +1,64 @@
-import click
 import asyncio
+import pandas as pd
 import concurrent.futures
+from datetime import datetime
+from time import sleep
 
-# Asynchronous API calls using asyncio
-async def fetch_news():
-    # Code to fetch news API data
-    await asyncio.sleep(2)
-    click.echo("News fetched.")
+import click
+from data_sources.exchange_data.binance import (
+    get_klines,
+    load_symbols,
+    fetch_exchange_data,
+)
+from utils.chatgpt import prompt_chatgpt_stream
+from utils.config_loader import ConfigLoader
+from utils.dynaconf_utils import settings
+from data_sources.social_media.reddit import get_popular_posts
+from data_sources.mine_factors import mine_factors_from_files
+from data_sources.fuse_data import create_latest_features
+from models.backtest import get_strategy_backtest_results
+from models.trading_strategy.inference import strategy_inference
 
-async def fetch_market_data():
-    # Code to fetch market data API
-    await asyncio.sleep(2)
-    click.echo("Market data fetched.")
-
-async def fetch_social_feeds():
-    # Code to fetch social media API data
-    await asyncio.sleep(2)
-    click.echo("Social feeds fetched.")
-
-# Threading for running trading strategy
-def run_strategy(strategy):
-    # Code to run the trading strategy
-    click.echo(f"Running strategy: {strategy}")
 
 @click.group()
 def cli():
     """Financial Portfolio Manager CLI"""
     pass
 
+
 @cli.command()
 def sync_data():
     """Sync data from various sources"""
     click.echo("Syncing data...")
-    asyncio.run(fetch_news())
-    asyncio.run(fetch_market_data())
-    asyncio.run(fetch_social_feeds())
     click.echo("Data sync complete.")
 
+
 @cli.command()
-@click.argument("strategy")
-def run_strategy_command(strategy):
-    """Run a trading strategy"""
-    click.echo(f"Starting strategy execution...")
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.submit(run_strategy, strategy)
-    click.echo("Strategy execution complete.")
+@click.option(
+    "--start-dt",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
+    help="Start date",
+    required=True,
+)
+@click.option(
+    "--end-dt",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
+    help="End date",
+    required=True,
+)
+def infer_strategy(start_dt, end_dt):
+    """Infer trading strategy"""
+    click.echo(f"Starting trading strategy inference...")
+    config_loader = ConfigLoader()
+    config_loader.start()
+    strategy_inference(start_dt, end_dt, config_loader)
+    click.echo("Trading strategy inference complete.")
+
+
+@cli.command()
+def mine_factors():
+    mine_factors_from_files()
+
 
 if __name__ == "__main__":
     cli()

@@ -1,5 +1,6 @@
 import httpx
-from datetime import datetime
+import pytz
+from datetime import datetime, timedelta
 from typing import List
 
 from utils.dynaconf_utils import settings
@@ -15,7 +16,7 @@ DT_TZ = "US/Eastern"
 
 def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> dict:
     """
-    Retrieve cryptocurrency news articles.
+    Retrieve cryptocurrency news articles asynchronously.
 
     Args:
         symbols (List[str]): List of symbols to filter the news.
@@ -25,7 +26,14 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
     Returns:
         dict: Dictionary containing the retrieved cryptocurrency news articles.
     """
-    start_dt_utc = convert_to_utc(DT_TZ, start_dt.strftime(DT_FORMAT), DT_FORMAT)
+    try:
+        start_dt_utc = convert_to_utc(DT_TZ, start_dt.strftime(DT_FORMAT), DT_FORMAT)
+    except ValueError:
+        start_dt_utc = convert_to_utc(
+            DT_TZ,
+            start_dt.strftime("%a, %d %b %Y %H:%M:%S"),
+            "%a, %d %b %Y %H:%M:%S",
+        )
 
     total_pages = 9999
     params = {
@@ -39,9 +47,7 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
         page_num = 1
         while page_num < total_pages:
             params.update({"page": page_num})
-            response = request("GET", URL, params=params)
-            response.raise_for_status()
-            json_result = response.json()
+            json_result = request("GET", URL, params=params)
             json_results += json_result["data"]
             total_pages = json_result["total_pages"]
             if (
@@ -57,3 +63,17 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
         print(f"An error occurred: {e}")
 
     return json_results
+
+
+def fetch_latest_crypto_news():
+    symbols = settings.CRYPTO_NEWS_SYMBOLS
+
+    news = get_crypto_news(
+        symbols,
+        start_dt=(
+            datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+            - timedelta(days=1)
+        ),
+        items=3,
+    )
+    return news

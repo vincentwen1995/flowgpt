@@ -15,13 +15,13 @@ def request(method, url, params=None, data=None, json=None):
     Returns:
         dict: The JSON response from the request.
     """
-    try:
-        with httpx.Client() as client:
+    with httpx.Client() as client:
+        try:
             response = client.request(method, url, params=params, data=data, json=json)
             response.raise_for_status()
             return response.json()
 
-    except httpx.HTTPError as e:
-        print(f"HTTP error occurred: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        except httpx.HTTPError as e:
+            print(f"HTTP error occurred: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
