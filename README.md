@@ -41,6 +41,22 @@ To use this software, follow these steps:
 1. Clone this repository to your local machine.
 2. Install the necessary dependencies specified in the requirements.txt file.
 3. Configure the meta parameters and other settings in the configuration file `portfolio_manager/config.yaml`.
+4. Export the followings as environment variables:
+
+```bash
+export CHATGPT_API_KEY=
+export CRYPTO_NEWS_API_KEY=
+export REDDIT_PERSONAL_USE_SCRIPT=
+export REDDIT_PERSONAL_USE_SECRET=
+export REDDIT_USERNAME=
+```
+
+Please find the relevant API requirements and documentation here:
+
+* [OpenAI](https://platform.openai.com/docs/api-reference/introduction)
+* [Crypto News](https://cryptonews-api.com/documentation)
+* [Reddit](https://towardsdatascience.com/how-to-use-the-reddit-api-in-python-5e05ddfd1e5c)
+
 
 
 ### Factor mining
