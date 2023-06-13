@@ -27,10 +27,8 @@ def cli():
 
 
 @cli.command()
-def sync_data():
-    """Sync data from various sources"""
-    click.echo("Syncing data...")
-    click.echo("Data sync complete.")
+def mine_factors():
+    mine_factors_from_files()
 
 
 @cli.command()
@@ -53,11 +51,6 @@ def infer_strategy(start_dt, end_dt):
     config_loader.start()
     strategy_inference(start_dt, end_dt, config_loader)
     click.echo("Trading strategy inference complete.")
-
-
-@cli.command()
-def mine_factors():
-    mine_factors_from_files()
 
 
 if __name__ == "__main__":

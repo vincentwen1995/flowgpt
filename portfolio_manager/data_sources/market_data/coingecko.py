@@ -43,7 +43,17 @@ def fetch_market_data(dt: datetime):
     results = {}
     for symbol_id in symbol_ids:
         data = get_history_data(symbol_id, dt)
-        results.update({symbol_id: data})
+        if not data:
+            continue
+        results.update(
+            {
+                symbol_id: {
+                    "market_data": data.get("market_data"),
+                    "community_data": data.get("community_data"),
+                    "public_interest_stats": data.get("public_interest_stats"),
+                }
+            }
+        )
 
     return results
 
