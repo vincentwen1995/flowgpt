@@ -1,3 +1,4 @@
+import math
 from typing import List, Generator
 
 import openai
@@ -35,19 +36,41 @@ def prompt_chatgpt_stream(
     }
 
 
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301") -> int:
+def prompt_chatgpt(
+    prompt: List[dict], model="gpt-3.5-turbo", temperature: float = 1.0
+) -> dict:
+    """
+    Generates a chat-based response from the OpenAI GPT-3.5 Turbo model.
+
+    Args:
+        prompt (List[dict]): A list of message dictionaries representing the conversation.
+        model (str, optional): The model name to use. Defaults to "gpt-3.5-turbo".
+
+    Returns:
+        dict: A dictionary containing the role and content of the generated response.
+    """
+    response = openai.ChatCompletion.create(
+        model=model, messages=prompt, temperature=temperature
+    )
+
+    return response["choices"][0]["message"]
+
+
+def num_tokens_from_messages(messages, encoder_model="gpt-3.5-turbo-0301") -> int:
     """
     Returns the number of tokens used by a list of messages.
 
     Args:
         messages: The list of messages in the conversation.
-        model (str, optional): The model name. Defaults to "gpt-3.5-turbo".
+        encoder_model (str, optional): The model name. Defaults to "gpt-3.5-turbo".
 
     Returns:
         int: The number of tokens used by the messages.
     """
-    encoding = get_encoder(model)
-    if model == "gpt-3.5-turbo-0301":  # note: future models may deviate from this
+    encoding = get_encoder(encoder_model)
+    if (
+        encoder_model == "gpt-3.5-turbo-0301"
+    ):  # note: future models may deviate from this
         num_tokens = 0
         for message in messages:
             num_tokens += (
@@ -61,7 +84,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301") -> int:
         return num_tokens
     else:
         raise NotImplementedError(
-            f"""num_tokens_from_messages() is not presently implemented for model {model}.
+            f"""num_tokens_from_messages() is not presently implemented for encoder_model {encoder_model}.
     See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
         )
 
@@ -74,7 +97,12 @@ def get_encoder(model: str):
     return encoding
 
 
-def chunk_string(string: str, n: int) -> List[str]:
+def num_tokens_from_string(string: str, encoder_model="gpt-3.5-turbo-0301") -> int:
+    encoder = get_encoder(encoder_model)
+    return len(encoder.encode(string))
+
+
+def chunk_string(string: str, n: int, encoder_model="gpt-3.5") -> str:
     """
     Chunk a string into n parts.
 
@@ -82,8 +110,8 @@ def chunk_string(string: str, n: int) -> List[str]:
         string (str): The string to be chunked.
         n (int): The number of parts to divide the string into.
 
-    Returns:
-        List[str]: A list of string chunks.
+    Yields:
+        str: divided string
     """
     if n <= 0:
         raise ValueError("Number of parts should be a positive integer.")
@@ -91,10 +119,11 @@ def chunk_string(string: str, n: int) -> List[str]:
     if len(string) < n:
         raise ValueError("String length is less than the number of parts.")
 
-    chunk_size = len(string) // n
-    remainder = len(string) % n
+    encoder = get_encoder(encoder_model)
+    tokenized_strings = encoder.encode(string)
+    chunk_size = len(tokenized_strings) // n
+    remainder = len(tokenized_strings) % n
 
-    chunks = []
     start = 0
 
     for i in range(n):
@@ -103,7 +132,6 @@ def chunk_string(string: str, n: int) -> List[str]:
         else:
             end = start + chunk_size
 
-        chunks.append(string[start:end])
-        start = end
+        yield encoder.decode(tokenized_strings[start:end])
 
-    return chunks
+        start = end

@@ -17,13 +17,13 @@ def min_max_scaling(df, column):
     return df
 
 
-def process_data(df, select_coin_num, factor_name, n):
+def process_data(df, select_coin_num, factor_name, window):
     df["timestamp"] = df["Timestamp"]
     df["open"].fillna(method="ffill", inplace=True)
     df["high"].fillna(method="ffill", inplace=True)
     df["low"].fillna(method="ffill", inplace=True)
 
-    df["Mtm"] = (df["close"] / df["close"].shift(n) - 1) * 100
+    df["Mtm"] = (df["close"] / df["close"].shift(window) - 1) * 100
 
     df["bottom"] = df.groupby("timestamp")[factor_name].rank(method="first")
     df["top"] = df.groupby("timestamp")[factor_name].rank(
@@ -182,12 +182,12 @@ def backtest(hold_hour, c_rate, select_coin_num, select_coin):
     return temp
 
 
-def compute_factors(market_data_df: pd.DataFrame, factor_weights: dict, n: int):
+def compute_factors(market_data_df: pd.DataFrame, factor_weights: dict, window: int):
     market_data_df["combined_factor"] = 0
     for factor_name, weight in factor_weights.items():
         factor_module = import_module(f"models.factors.{factor_name}")
         market_data_df[factor_name] = factor_module.signal(
-            market_data_df, n, factor_name
+            df=market_data_df, window=window, factor_name=factor_name
         )
         market_data_df = min_max_scaling(market_data_df, factor_name)
         market_data_df["combined_factor"] += market_data_df[factor_name] * weight
@@ -208,9 +208,9 @@ def get_strategy_backtest_results(
             f"Specified strategy configuration {strategy_config} not found."
         )
     coin_num = strategy_conf["coin_num"]
-    n = strategy_conf["window"]
+    window = strategy_conf["window"]
     hold_hour = strategy_conf["hold_hour"]
     c_rate = strategy_conf["c_rate"]
-    ranking_df = compute_factors(market_data_df, factor_weights, n)
-    ranking_df = process_data(ranking_df, coin_num, "combined_factor", n)
+    ranking_df = compute_factors(market_data_df, factor_weights, window)
+    ranking_df = process_data(ranking_df, coin_num, "combined_factor", window)
     return backtest(hold_hour, c_rate, coin_num, ranking_df)

@@ -2,14 +2,13 @@ from datetime import datetime, timedelta
 import pytz
 
 
-def convert_to_utc(source_tz: str, datetime_str: str, datetime_format: str) -> datetime:
+def convert_to_utc(source_tz: str, dt: datetime) -> datetime:
     """
     Convert a datetime string from the source timezone to UTC.
 
     Args:
         source_tz (str): The source timezone as a string.
-        datetime_str (str): The datetime string to convert.
-        datetime_format (str): The format of the datetime string.
+        dt (datetime): The datetime object to convert.
 
     Returns:
         datetime: The converted datetime in UTC.
@@ -20,21 +19,18 @@ def convert_to_utc(source_tz: str, datetime_str: str, datetime_format: str) -> d
 
     Example:
         source_tz = "US/Eastern"
-        datetime_str = "2023-06-10 12:00:00"
-        datetime_format = "%Y-%m-%d %H:%M:%S"
+        dt = datetime(2023, 6, 10, 12, 0, 0)
         utc_datetime = convert_to_utc(source_tz, datetime_str, datetime_format)
     """
-    # Define the source timezone
-    source_timezone = pytz.timezone(source_tz)
+    if not dt.tzinfo:
+        # Define the source timezone
+        source_timezone = pytz.timezone(source_tz)
 
-    # Parse the datetime string using the specified format
-    source_datetime = datetime.strptime(datetime_str, datetime_format)
-
-    # Set the source timezone to the datetime object
-    source_datetime = source_timezone.localize(source_datetime)
+        # Set the source timezone to the datetime object
+        dt = source_timezone.localize(dt)
 
     # Convert to UTC
-    utc_datetime = source_datetime.astimezone(pytz.UTC)
+    utc_datetime = dt.astimezone(pytz.UTC)
 
     return utc_datetime
 

@@ -25,17 +25,7 @@ def get_popular_posts(subreddit_name: str, n: int = 3):
         list: A list of dictionaries representing the popular posts.
     """
     subreddit = reddit.subreddit(subreddit_name)
-    popular_posts = subreddit.hot(limit=n)
-
-    return [
-        {
-            "score": post.__dict__["score"],
-            "ups": post.__dict__["ups"],
-            "title": post.__dict__["title"],
-            "selftext": post.__dict__["selftext"],
-        }
-        for post in popular_posts
-    ]
+    return subreddit.hot(limit=n)
 
 
 def fetch_posts():
@@ -43,10 +33,21 @@ def fetch_posts():
     results = {}
     for subreddit in subreddits:
         try:
-            results.update({subreddit: get_popular_posts(subreddit)})
+            results.update(
+                {
+                    subreddit: [
+                        {
+                            "score": post.__dict__["score"],
+                            "ups": post.__dict__["ups"],
+                            "title": post.__dict__["title"],
+                            "selftext": post.__dict__["selftext"],
+                        }
+                        for post in get_popular_posts(subreddit)
+                    ]
+                }
+            )
         except Exception as e:
             print(f"Failed fetching posts for subreddit: {subreddit}")
             print(e)
             continue
-    # return {subreddit: get_popular_posts(subreddit) for subreddit in subreddits}
     return results

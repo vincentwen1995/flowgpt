@@ -78,7 +78,7 @@ python cli.py mine-factors
 
 ```bash
 cd portfolio_manager
-python cli.py inference-srategy --start-dt 2023-06-01 --end-dt 2023-06-02
+python cli.py infer-srategy --start-dt 2023-06-01 --end-dt 2023-06-02
 ```
 
 Please refer to the documentation for detailed instructions on setting up and running the software components.

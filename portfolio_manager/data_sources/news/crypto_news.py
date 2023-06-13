@@ -26,14 +26,7 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
     Returns:
         dict: Dictionary containing the retrieved cryptocurrency news articles.
     """
-    try:
-        start_dt_utc = convert_to_utc(DT_TZ, start_dt.strftime(DT_FORMAT), DT_FORMAT)
-    except ValueError:
-        start_dt_utc = convert_to_utc(
-            DT_TZ,
-            start_dt.strftime("%a, %d %b %Y %H:%M:%S"),
-            "%a, %d %b %Y %H:%M:%S",
-        )
+    start_dt_utc = convert_to_utc(settings.TIME_ZONE, start_dt)
 
     total_pages = 9999
     params = {
@@ -51,8 +44,13 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
             json_results += json_result["data"]
             total_pages = json_result["total_pages"]
             if (
-                convert_to_utc(DT_TZ, json_results[-1]["date"], DT_FORMAT)
+                convert_to_utc(
+                    DT_TZ, datetime.strptime(json_results[-1]["date"], DT_FORMAT)
+                )
                 < start_dt_utc
+            ) or (
+                settings.CRYPTO_NEW_LIMIT_FOR_DEMO
+                and len(json_results) >= settings.CRYPTO_NEW_LIMIT_FOR_DEMO
             ):
                 break
             page_num += 1
@@ -68,12 +66,20 @@ def get_crypto_news(symbols: List[str], start_dt: datetime, items: int = 50) -> 
 def fetch_latest_crypto_news():
     symbols = settings.CRYPTO_NEWS_SYMBOLS
 
-    news = get_crypto_news(
+    latest_dt = datetime.today().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    ) - timedelta(days=1)
+
+    news_results = get_crypto_news(
         symbols,
-        start_dt=(
-            datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-            - timedelta(days=1)
-        ),
+        start_dt=latest_dt,
         items=3,
     )
-    return news
+    return [
+        {
+            "title": news["title"],
+            "text": news["text"],
+            "sentiment": news["sentiment"],
+        }
+        for news in news_results
+    ]
